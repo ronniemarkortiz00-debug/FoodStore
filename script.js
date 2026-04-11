@@ -12,7 +12,6 @@ function toggleForm() {
 
   setTimeout(() => {
     isLogin = !isLogin;
-
     document.getElementById("title").innerText = isLogin ? "Login" : "Register";
     document.getElementById("submitBtn").innerText = isLogin ? "Login" : "Register";
     document.getElementById("switchText").innerHTML = isLogin
@@ -152,7 +151,12 @@ function fetchOrderHistory() {
       if (list) list.innerHTML = "<li>Failed to load order history.</li>";
     });
 }
-
+function logout() {
+  if (confirm("Are you sure you want to log out?")) {
+    // redirect back to login page
+    window.location.href = "index.html"; // or login.html
+  }
+}
 function displayHistory() {
   const list = document.getElementById("historyList");
   if (!list) return;
@@ -160,10 +164,4 @@ function displayHistory() {
   orderHistory.forEach(order => {
     list.innerHTML += `<li>${order.products} - Total: ₱${order.total} (${new Date(order.date).toLocaleString()})</li>`;
   });
-}
-function logout() {
-  if (confirm("Are you sure you want to log out?")) {
-    // redirect back to login page
-    window.location.href = "index.html"; // or login.html
-  }
 }
