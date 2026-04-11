@@ -60,10 +60,15 @@ function showError(msg) {
 }
 
 // ---------- STORE + CART ----------
-function getUser() { return new URLSearchParams(window.location.search).get("user"); }
 function displayUser() { 
   const user = getUser(); 
-  if (document.getElementById("user")) document.getElementById("user").innerText = "Hello, " + user; 
+
+  if (!user) {
+    window.location.replace("index.html");
+    return;
+  }
+
+  document.getElementById("user").innerText = "Hello, " + user;
 }
 
 // ADD TO CART
@@ -153,7 +158,7 @@ function fetchOrderHistory() {
 }
 function logout() {
   if (confirm("Are you sure you want to log out?")) {
-    // remove URL completely by going to login page
+    // remove user from URL by going back to login
     window.location.replace("index.html");
   }
 }
@@ -164,4 +169,13 @@ function displayHistory() {
   orderHistory.forEach(order => {
     list.innerHTML += `<li>${order.products} - Total: ₱${order.total} (${new Date(order.date).toLocaleString()})</li>`;
   });
+}
+localStorage.setItem("user", username);
+window.location.href = "store.html";
+function getUser() {
+  return localStorage.getItem("user");
+}
+function logout() {
+  localStorage.removeItem("user");
+  window.location.replace("index.html");
 }
