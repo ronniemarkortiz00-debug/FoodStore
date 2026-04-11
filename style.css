@@ -311,7 +311,25 @@ button:hover {
 .login-box button:active {
   transform: scale(0.97);
 }
+.logout-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px; /* change to left: 20px; if you want left side */
+  
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
 
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.logout-btn:hover {
+  background-color: #e60000;
+}
 /* HOVER SMOOTH */
 .login-box,
 .item {
