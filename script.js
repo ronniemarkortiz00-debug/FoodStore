@@ -153,8 +153,8 @@ function fetchOrderHistory() {
 }
 function logout() {
   if (confirm("Are you sure you want to log out?")) {
-    // redirect back to login page
-    window.location.href = "index.html"; // or login.html
+    // remove URL completely by going to login page
+    window.location.replace("index.html");
   }
 }
 function displayHistory() {
