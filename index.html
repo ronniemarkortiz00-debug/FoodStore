@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="login-container">
+
+  <!-- LEFT SIDE (branding) -->
+  <div class="login-left">
+    <h1>Fckng Food Store</h1>
+    <p>Welcome back! Login to continue shopping.</p>
+  </div>
+
+  <!-- RIGHT SIDE (form) -->
+  <div class="login-right">
+    <div class="login-box">
+      <h2 id="title">Login</h2>
+
+      <input type="text" id="username" placeholder="Username">
+      <input type="password" id="password" placeholder="Password">
+
+      <button id="submitBtn" onclick="submitForm()">Login</button>
+
+      <div class="switch" id="switchText">
+        Don't have an account? <span onclick="toggleForm()">Register</span>
+      </div>
+
+      <div id="error" class="error"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
