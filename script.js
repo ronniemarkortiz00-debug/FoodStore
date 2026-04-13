@@ -39,9 +39,6 @@ function submitForm() {
 
   fetch(scriptURL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
     body: JSON.stringify({
       action: action,
       username: username,
@@ -65,7 +62,10 @@ function submitForm() {
         }
       }
     })
-    .catch(() => showError("Connection error"));
+    .catch(err => {
+      console.log(err);
+      showError("Connection error");
+    });
 }
 function showError(msg) {
   let err = document.getElementById("error");
