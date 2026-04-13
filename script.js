@@ -37,9 +37,16 @@ function submitForm() {
 
   const action = isLogin ? "login" : "register";
 
- fetch(scriptURL, {
+  fetch(scriptURL, {
     method: "POST",
-    body: JSON.stringify({ action, username, password })
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      action: action,
+      username: username,
+      password: password
+    })
   })
     .then(res => res.json())
     .then(data => {
@@ -60,7 +67,6 @@ function submitForm() {
     })
     .catch(() => showError("Connection error"));
 }
-
 function showError(msg) {
   let err = document.getElementById("error");
 
@@ -204,10 +210,9 @@ function buy() {
       return;
     }
 
-    // ❗ FIRST CLICK → SHOW QR
     if (!gcashPaid) {
       generateQR(totalPrice);
-      alert("Scan QR and click DONE");
+      alert("Scan QR then click DONE");
       return;
     }
 
@@ -218,32 +223,32 @@ function buy() {
   }
 
   const confirmOrder = confirm(
-    `Total: ₱${totalPrice}\nPayment: ${paymentMethod}\n\nProceed?`
+    `Total: ₱${totalPrice}\nPayment: ${paymentMethod}\nProceed?`
   );
 
   if (!confirmOrder) return;
 
-   fetch(scriptURL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    action: "order",
-    username,
-    products,
-    total,
-    paymentMethod,
-    cashGiven,
-    change,
-    gcashNumber
+  fetch(scriptURL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      action: "order",
+      username: user,
+      products: productsString,
+      total: totalPrice,
+      paymentMethod: paymentMethod,
+      cashGiven: cashGiven,
+      change: change,
+      gcashNumber: gcashNumber
+    })
   })
-})
     .then(() => {
       alert("Order saved!");
 
       cart = [];
-      gcashPaid = false; // reset
+      gcashPaid = false;
 
       displayCart();
       fetchOrderHistory();
@@ -255,7 +260,6 @@ function buy() {
     })
     .catch(() => alert("Error sending order"));
 }
-
 // ---------- ORDER HISTORY ----------
 function fetchOrderHistory() {
   const user = getUser();
