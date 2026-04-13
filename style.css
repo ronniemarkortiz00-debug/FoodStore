@@ -339,4 +339,38 @@ button:hover {
   input::placeholder {
   color: #888; /* visible gray */
 }
+
+/* ---------- MOBILE FIX ---------- */
+@media (max-width: 768px) {
+
+  .login-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .login-left {
+    width: 100%;
+    height: auto;
+    padding: 30px 20px;
+    text-align: center;
+  }
+
+  .login-right {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .login-box {
+    width: 100%;
+    max-width: 350px;
+    margin: auto;
+  }
+
+  input {
+    font-size: 16px; /* prevents iOS zoom */
+  }
+
+  button {
+    font-size: 16px;
+  }
 }
