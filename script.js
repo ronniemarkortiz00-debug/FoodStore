@@ -8,56 +8,21 @@ let orderHistory = [];
 function submitForm() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
-
-  if (!username || !password) {
-    alert("Fill all fields");
-    return;
-  }
-
+  if (!username || !password) { showError("Fill all fields"); return; }
   const action = isLogin ? "login" : "register";
 
-  fetch(scriptURL, {
-    method: "POST",
-    body: JSON.stringify({ action, username, password })
-  })
+  fetch(scriptURL, { method: "POST", body: JSON.stringify({ action, username, password }) })
     .then(res => res.json())
     .then(data => {
-
-      // ---------- LOGIN ----------
       if (action === "login") {
-        if (data.status === "success") {
-          localStorage.setItem("user", username);
-          window.location.href = "store.html";
-        } else {
-          alert("Invalid login");
-        }
+        if (data.status === "success") window.location.href = "store.html?user=" + encodeURIComponent(username);
+        else showError("Invalid login");
+      } else if (action === "register") {
+        if (data.status === "exists") showError("Username already exists");
+        else { alert("Account created! You can now login."); toggleForm(); }
       }
-
-      // ---------- REGISTER ----------
-      if (action === "register") {
-        if (data.status === "exists") {
-          alert("Username already exists");
-        } else if (data.status === "success") {
-          alert("Registered successfully! Please login.");
-          
-          // switch back to login mode
-          isLogin = true;
-          document.getElementById("title").innerText = "Login";
-          document.getElementById("submitBtn").innerText = "Login";
-
-          document.getElementById("switchText").innerHTML =
-            `Don't have an account? <span onclick="toggleForm()">Register</span>`;
-
-          // clear inputs
-          document.getElementById("username").value = "";
-          document.getElementById("password").value = "";
-        } else {
-          alert("Registration failed");
-        }
-      }
-
     })
-    .catch(() => alert("Connection error"));
+    .catch(() => showError("Connection error"));
 }
 // USER
 function getUser() {
