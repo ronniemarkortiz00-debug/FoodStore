@@ -162,6 +162,7 @@ function buy() {
   const totalPrice = Object.keys(groupedCart)
     .reduce((sum, p) => sum + groupedCart[p].price * groupedCart[p].quantity, 0);
 
+  // ✅ CALCULATE CHANGE FIRST
   let change = 0;
 
   if (paymentMethod === "cash") {
@@ -172,13 +173,23 @@ function buy() {
 
     change = cashGiven - totalPrice;
 
+    // show change BEFORE saving
     document.getElementById("changeDisplay").innerText =
       "Change: ₱" + change.toFixed(2);
   } else {
+    change = 0;
     document.getElementById("changeDisplay").innerText =
       "Paid via " + paymentMethod.toUpperCase();
   }
 
+  // ✅ CONFIRM BEFORE SAVING
+  const confirmOrder = confirm(
+    `Total: ₱${totalPrice}\nChange: ₱${change}\n\nDo you want to proceed?`
+  );
+
+  if (!confirmOrder) return;
+
+  // ✅ SAVE ORDER ONLY AFTER CHANGE IS SHOWN
   fetch(scriptURL, {
     method: "POST",
     body: JSON.stringify({
@@ -202,7 +213,6 @@ function buy() {
     })
     .catch(() => alert("Error sending order"));
 }
-
 // ---------- ORDER HISTORY ----------
 function fetchOrderHistory() {
   const user = getUser();
