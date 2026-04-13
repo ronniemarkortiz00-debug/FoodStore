@@ -37,12 +37,24 @@ function submitForm() {
   fetch(scriptURL, { method: "POST", body: JSON.stringify({ action, username, password }) })
     .then(res => res.json())
     .then(data => {
-      if (action === "login") {
-       if (data.status === "success") {
-if (data.status === "success") {
-  localStorage.setItem("user", username);
-  window.location.href = "store.html";
-}
+  .then(data => {
+  if (action === "login") {
+    if (data.status === "success") {
+      localStorage.setItem("user", username);
+      window.location.href = "store.html";
+    } else {
+      showError("Invalid login");
+    }
+
+  } else if (action === "register") {
+    if (data.status === "exists") {
+      showError("Username already exists");
+    } else {
+      alert("Account created! You can now login.");
+      toggleForm();
+    }
+  }
+})
         else showError("Invalid login");
       } else if (action === "register") {
         if (data.status === "exists") showError("Username already exists");
