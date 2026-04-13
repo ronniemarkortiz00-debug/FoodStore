@@ -77,22 +77,22 @@
   <h4 id="total"></h4>
 
   <!-- ✅ PAYMENT SYSTEM -->
-  <label>Payment Method:</label>
-  <select id="paymentMethod" onchange="togglePaymentFields()">
-    <option value="cash">Cash</option>
-    <option value="gcash">GCash</option>
-  </select>
+ <select id="paymentMethod" onchange="togglePaymentFields()">
+  <option value="cash">Cash</option>
+  <option value="gcash">GCash</option>
+</select>
 
-  <!-- CASH INPUT -->
-  <input type="number" id="cashGiven" placeholder="Cash amount" />
-
-  <!-- GCASH INPUT (hidden by default) -->
-  <input type="text" id="gcashNumber" placeholder="GCash Number / Account Number" style="display:none;" />
-
-  <div id="changeDisplay"></div>
-
-  <button onclick="buy()">Buy</button>
+<!-- CASH -->
+<div id="cashField">
+  <input type="number" id="cashGiven" placeholder="Enter cash amount">
 </div>
+
+<!-- GCASH -->
+<div id="gcashField" style="display:none;">
+  <input type="text" id="gcashNumber" placeholder="Enter GCash number">
+</div>
+
+<p id="changeDisplay"></p>
  
 <script src="script.js"></script>
 </body>
