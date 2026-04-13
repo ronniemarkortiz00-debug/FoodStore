@@ -339,7 +339,7 @@ button:hover {
   input::placeholder {
   color: #888; /* visible gray */
 }
-
+}
 /* ---------- MOBILE FIX ---------- */
 @media (max-width: 768px) {
 
