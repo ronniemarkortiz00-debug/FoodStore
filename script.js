@@ -25,7 +25,7 @@ function submitForm() {
       if (action === "login") {
         if (data.status === "success") {
           localStorage.setItem("user", username);
-          window.location.href = "store.html";
+         
         } else {
           alert("Invalid login");
         }
