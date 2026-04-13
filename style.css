@@ -336,4 +336,7 @@ button:hover {
 .logout-btn:hover {
   background-color: #e60000;
 }
+  input::placeholder {
+  color: #888; /* visible gray */
+}
 }
