@@ -142,6 +142,7 @@ function buy() {
 
   const paymentMethod = document.getElementById("paymentMethod").value;
   const cashGiven = parseFloat(document.getElementById("cashGiven").value) || 0;
+  const gcashNumber = document.getElementById("gcashNumber").value.trim();
 
   let groupedCart = {};
   cart.forEach(item => {
@@ -161,6 +162,66 @@ function buy() {
 
   const totalPrice = Object.keys(groupedCart)
     .reduce((sum, p) => sum + groupedCart[p].price * groupedCart[p].quantity, 0);
+
+  let change = 0;
+
+  // ---------------- CASH ----------------
+  if (paymentMethod === "cash") {
+    if (cashGiven < totalPrice) {
+      alert("Insufficient cash!");
+      return;
+    }
+
+    change = cashGiven - totalPrice;
+
+    document.getElementById("changeDisplay").innerText =
+      "Change: ₱" + change.toFixed(2);
+  }
+
+  // ---------------- GCASH ----------------
+  else if (paymentMethod === "gcash") {
+    if (!gcashNumber) {
+      alert("Please enter your GCash number!");
+      return;
+    }
+
+    change = 0;
+
+    document.getElementById("changeDisplay").innerText =
+      "Paid via GCash (" + gcashNumber + ")";
+  }
+
+  const confirmOrder = confirm(
+    `Total: ₱${totalPrice}\nPayment: ${paymentMethod}\n\nProceed?`
+  );
+
+  if (!confirmOrder) return;
+
+  fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "order",
+      username: user,
+      products: productsString,
+      total: totalPrice,
+      paymentMethod,
+      cashGiven,
+      change,
+      gcashNumber
+    })
+  })
+    .then(() => {
+      alert("Order saved!");
+
+      cart = [];
+      displayCart();
+      fetchOrderHistory();
+
+      document.getElementById("cashGiven").value = "";
+      document.getElementById("gcashNumber").value = "";
+    })
+    .catch(() => alert("Error sending order"));
+}
 
   // ✅ CALCULATE CHANGE FIRST
   let change = 0;
