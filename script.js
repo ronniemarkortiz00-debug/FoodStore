@@ -1,4 +1,4 @@
-const scriptURL = "YOUR_WEB_APP_URL_HERE";
+const scriptURL = "https://script.google.com/macros/s/AKfycbwhFrL8wjoLYyFmZI4Q2WuWDEe1atlrvXs5wyDynODOC1hKHAB1-i4KKTJKLp3vlxN9/exec";
 
 let isLogin = true;
 let cart = [];
