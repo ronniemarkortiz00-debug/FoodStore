@@ -38,7 +38,11 @@ function submitForm() {
     .then(res => res.json())
     .then(data => {
       if (action === "login") {
-        if (data.status === "success") window.location.href = "store.html?user=" + encodeURIComponent(username);
+       if (data.status === "success") {
+if (data.status === "success") {
+  localStorage.setItem("user", username);
+  window.location.href = "store.html";
+}
         else showError("Invalid login");
       } else if (action === "register") {
         if (data.status === "exists") showError("Username already exists");
@@ -156,12 +160,7 @@ function fetchOrderHistory() {
       if (list) list.innerHTML = "<li>Failed to load order history.</li>";
     });
 }
-function logout() {
-  if (confirm("Are you sure you want to log out?")) {
-    // remove user from URL by going back to login
-    window.location.replace("index.html");
-  }
-}
+
 function displayHistory() {
   const list = document.getElementById("historyList");
   if (!list) return;
@@ -170,8 +169,7 @@ function displayHistory() {
     list.innerHTML += `<li>${order.products} - Total: ₱${order.total} (${new Date(order.date).toLocaleString()})</li>`;
   });
 }
-localStorage.setItem("user", username);
-window.location.href = "store.html";
+
 function getUser() {
   return localStorage.getItem("user");
 }
