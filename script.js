@@ -308,6 +308,7 @@ function logout() {
   if (confirm("Are you sure you want to log out?")) {
     window.location.href = "index.html";
   }
+}
   // ---------- RECEIPT ----------
 function showReceipt(user, products, total, payment, cash, change, gcash) {
   const receiptHTML = `
@@ -359,4 +360,4 @@ function closeReceipt() {
 function printReceipt() {
   window.print();
 }
-}
+
