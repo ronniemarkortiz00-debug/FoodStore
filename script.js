@@ -38,21 +38,9 @@ function submitForm() {
   const action = isLogin ? "login" : "register";
 
  fetch(scriptURL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    action: "order",
-    username,
-    products,
-    total,
-    paymentMethod,
-    cashGiven,
-    change,
-    gcashNumber
+    method: "POST",
+    body: JSON.stringify({ action, username, password })
   })
-})
     .then(res => res.json())
     .then(data => {
       if (action === "login") {
@@ -235,19 +223,22 @@ function buy() {
 
   if (!confirmOrder) return;
 
-  fetch(scriptURL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "order",
-      username: user,
-      products: productsString,
-      total: totalPrice,
-      paymentMethod,
-      cashGiven,
-      change,
-      gcashNumber
-    })
+   fetch(scriptURL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    action: "order",
+    username,
+    products,
+    total,
+    paymentMethod,
+    cashGiven,
+    change,
+    gcashNumber
   })
+})
     .then(() => {
       alert("Order saved!");
 
