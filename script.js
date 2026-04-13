@@ -22,24 +22,43 @@ function submitForm() {
   })
     .then(res => res.json())
     .then(data => {
+
+      // ---------- LOGIN ----------
       if (action === "login") {
         if (data.status === "success") {
           localStorage.setItem("user", username);
-         
+          window.location.href = "store.html";
         } else {
           alert("Invalid login");
         }
-      } else {
+      }
+
+      // ---------- REGISTER ----------
+      if (action === "register") {
         if (data.status === "exists") {
           alert("Username already exists");
+        } else if (data.status === "success") {
+          alert("Registered successfully! Please login.");
+          
+          // switch back to login mode
+          isLogin = true;
+          document.getElementById("title").innerText = "Login";
+          document.getElementById("submitBtn").innerText = "Login";
+
+          document.getElementById("switchText").innerHTML =
+            `Don't have an account? <span onclick="toggleForm()">Register</span>`;
+
+          // clear inputs
+          document.getElementById("username").value = "";
+          document.getElementById("password").value = "";
         } else {
-          alert("Registered! You can now login.");
+          alert("Registration failed");
         }
       }
+
     })
     .catch(() => alert("Connection error"));
 }
-
 // USER
 function getUser() {
   return localStorage.getItem("user");
