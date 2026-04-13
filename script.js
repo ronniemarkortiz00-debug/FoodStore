@@ -1,4 +1,4 @@
-const scriptURL = "https://script.google.com/macros/s/AKfycbzdEam_9Vq7cKsZxB6fVxv1UNYMX2_IOOuz3CeXLwFA6h14tidhVUiueCIQJ-QMZQ7NVw/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbxhPLNfGvoS-R1uW0Hhsdkcu2W1xF7iTRUkwt5XzsW8D0tQUlVp13ZK5Ys5uZjjNCrUlQ/exec";
 
 let isLogin = true;
 let cart = [];
