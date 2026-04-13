@@ -37,10 +37,22 @@ function submitForm() {
 
   const action = isLogin ? "login" : "register";
 
-  fetch(scriptURL, {
-    method: "POST",
-    body: JSON.stringify({ action, username, password })
+ fetch(scriptURL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    action: "order",
+    username,
+    products,
+    total,
+    paymentMethod,
+    cashGiven,
+    change,
+    gcashNumber
   })
+})
     .then(res => res.json())
     .then(data => {
       if (action === "login") {
