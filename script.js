@@ -135,6 +135,7 @@ function displayCart() {
 // ---------- BUY (UPDATED PAYMENT SYSTEM) ----------
 function buy() {
   const user = getUser();
+
   if (cart.length === 0) {
     alert("Cart is empty!");
     return;
@@ -145,6 +146,7 @@ function buy() {
   const gcashNumber = document.getElementById("gcashNumber").value.trim();
 
   let groupedCart = {};
+
   cart.forEach(item => {
     if (groupedCart[item.product]) {
       groupedCart[item.product].quantity += 1;
@@ -165,7 +167,7 @@ function buy() {
 
   let change = 0;
 
-  // ---------------- CASH ----------------
+  // ---------- CASH ----------
   if (paymentMethod === "cash") {
     if (cashGiven < totalPrice) {
       alert("Insufficient cash!");
@@ -178,7 +180,7 @@ function buy() {
       "Change: ₱" + change.toFixed(2);
   }
 
-  // ---------------- GCASH ----------------
+  // ---------- GCASH ----------
   else if (paymentMethod === "gcash") {
     if (!gcashNumber) {
       alert("Please enter your GCash number!");
@@ -219,58 +221,7 @@ function buy() {
 
       document.getElementById("cashGiven").value = "";
       document.getElementById("gcashNumber").value = "";
-    })
-    .catch(() => alert("Error sending order"));
-}
-
-  // ✅ CALCULATE CHANGE FIRST
-  let change = 0;
-
-  if (paymentMethod === "cash") {
-    if (cashGiven < totalPrice) {
-      alert("Insufficient cash!");
-      return;
-    }
-
-    change = cashGiven - totalPrice;
-
-    // show change BEFORE saving
-    document.getElementById("changeDisplay").innerText =
-      "Change: ₱" + change.toFixed(2);
-  } else {
-    change = 0;
-    document.getElementById("changeDisplay").innerText =
-      "Paid via " + paymentMethod.toUpperCase();
-  }
-
-  // ✅ CONFIRM BEFORE SAVING
-  const confirmOrder = confirm(
-    `Total: ₱${totalPrice}\nChange: ₱${change}\n\nDo you want to proceed?`
-  );
-
-  if (!confirmOrder) return;
-
-  // ✅ SAVE ORDER ONLY AFTER CHANGE IS SHOWN
-  fetch(scriptURL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "order",
-      username: user,
-      products: productsString,
-      total: totalPrice,
-      paymentMethod,
-      cashGiven,
-      change
-    })
-  })
-    .then(() => {
-      alert("Order saved!");
-
-      cart = [];
-      displayCart();
-      fetchOrderHistory();
-
-      document.getElementById("cashGiven").value = "";
+      document.getElementById("changeDisplay").innerText = "";
     })
     .catch(() => alert("Error sending order"));
 }
@@ -308,7 +259,15 @@ function displayHistory() {
     `;
   });
 }
+function togglePaymentFields() {
+  const method = document.getElementById("paymentMethod").value;
 
+  document.getElementById("cashField").style.display =
+    method === "cash" ? "block" : "none";
+
+  document.getElementById("gcashField").style.display =
+    method === "gcash" ? "block" : "none";
+}
 // ---------- LOGOUT ----------
 function logout() {
   if (confirm("Are you sure you want to log out?")) {
