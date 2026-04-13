@@ -3,7 +3,7 @@ const scriptURL = "https://script.google.com/macros/s/AKfycbwGfebo0DPLVhxZ5nsQ-n
 let isLogin = true;
 let cart = [];
 let orderHistory = [];
-let gcashPaid = false;
+let gcashPaid = false; // ✅ NEW
 
 // ---------- LOGIN / REGISTER ----------
 function toggleForm() {
@@ -39,8 +39,11 @@ function submitForm() {
 
   fetch(scriptURL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" }, // ✅ FIX
-    body: JSON.stringify({ action, username, password })
+    body: JSON.stringify({
+      action: action,
+      username: username,
+      password: password
+    })
   })
     .then(res => res.json())
     .then(data => {
@@ -54,7 +57,7 @@ function submitForm() {
         if (data.status === "exists") {
           showError("Username already exists");
         } else {
-          alert("Account created!");
+          alert("Account created! You can now login.");
           toggleForm();
         }
       }
@@ -64,7 +67,6 @@ function submitForm() {
       showError("Connection error");
     });
 }
-
 function showError(msg) {
   let err = document.getElementById("error");
 
@@ -137,49 +139,20 @@ function displayCart() {
   }
 }
 
-// ---------- QR ----------
+// ---------- QR GENERATOR ----------
 function generateQR(total) {
   const qrImage = document.getElementById("qrImage");
-  const data = `GCash Payment - ₱${total}`;
 
+  const data = `GCash Payment - ₱${total}`;
   qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data)}`;
+
   document.getElementById("gcashQR").style.display = "block";
 }
 
+// ---------- CONFIRM GCASH ----------
 function confirmGCash() {
   gcashPaid = true;
   alert("Payment confirmed! Click BUY again.");
-}
-
-// ---------- RECEIPT ----------
-function showReceipt(user, products, total, paymentMethod, change, gcashNumber) {
-  document.getElementById("receipt").style.display = "block";
-
-  document.getElementById("rUser").innerText = "Customer: " + user;
-  document.getElementById("rItems").innerText = "Items: " + products;
-  document.getElementById("rTotal").innerText = "Total: ₱" + total;
-
-  if (paymentMethod === "cash") {
-    document.getElementById("rPayment").innerText =
-      "Payment: Cash | Change: ₱" + change.toFixed(2);
-  } else {
-    document.getElementById("rPayment").innerText =
-      "Payment: GCash (" + gcashNumber + ")";
-  }
-
-  document.getElementById("rDate").innerText =
-    "Date: " + new Date().toLocaleString();
-}
-
-function printReceipt() {
-  const content = document.getElementById("receipt").innerHTML;
-  const win = window.open("", "", "width=400,height=600");
-
-  win.document.write("<html><body>");
-  win.document.write(content);
-  win.document.write("</body></html>");
-  win.document.close();
-  win.print();
 }
 
 // ---------- BUY ----------
@@ -217,17 +190,23 @@ function buy() {
 
   let change = 0;
 
+  // ---------- CASH ----------
   if (paymentMethod === "cash") {
     if (cashGiven < totalPrice) {
       alert("Insufficient cash!");
       return;
     }
+
     change = cashGiven - totalPrice;
+
+    document.getElementById("changeDisplay").innerText =
+      "Change: ₱" + change.toFixed(2);
   }
 
-  if (paymentMethod === "gcash") {
+  // ---------- GCASH ----------
+  else if (paymentMethod === "gcash") {
     if (!gcashNumber) {
-      alert("Enter GCash number!");
+      alert("Please enter your GCash number!");
       return;
     }
 
@@ -236,39 +215,51 @@ function buy() {
       alert("Scan QR then click DONE");
       return;
     }
+
+    change = 0;
+
+    document.getElementById("changeDisplay").innerText =
+      "Paid via GCash (" + gcashNumber + ")";
   }
 
-  if (!confirm(`Total: ₱${totalPrice}\nProceed?`)) return;
+  const confirmOrder = confirm(
+    `Total: ₱${totalPrice}\nPayment: ${paymentMethod}\nProceed?`
+  );
+
+  if (!confirmOrder) return;
 
   fetch(scriptURL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" }, // ✅ FIX
-    body: JSON.stringify({
-      action: "order",
-      username: user,
-      products: productsString,
-      total: totalPrice,
-      paymentMethod,
-      cashGiven,
-      change,
-      gcashNumber
-    })
+  method: "POST",
+  body: JSON.stringify({
+    action: "order",
+    username: user,
+    products: productsString,
+    total: totalPrice,
+    paymentMethod: paymentMethod,
+    cashGiven: cashGiven,
+    change: change,
+    gcashNumber: gcashNumber
   })
-    .then(() => {
-      alert("Order saved!");
+})
+   .then(() => {
+  alert("Order saved!");
 
-      showReceipt(user, productsString, totalPrice, paymentMethod, change, gcashNumber);
+  showReceipt(user, productsString, totalPrice, paymentMethod, cashGiven, change, gcashNumber);
 
       cart = [];
       gcashPaid = false;
 
       displayCart();
       fetchOrderHistory();
+
+      document.getElementById("cashGiven").value = "";
+      document.getElementById("gcashNumber").value = "";
+      document.getElementById("changeDisplay").innerText = "";
+      document.getElementById("gcashQR").style.display = "none";
     })
     .catch(() => alert("Error sending order"));
 }
-
-// ---------- HISTORY ----------
+// ---------- ORDER HISTORY ----------
 function fetchOrderHistory() {
   const user = getUser();
 
@@ -291,14 +282,15 @@ function displayHistory() {
       <li>
         ${order.products}<br>
         Total: ₱${order.total}<br>
-        Payment: ${order.paymentMethod}<br>
+        Payment: ${order.paymentMethod || "N/A"}<br>
+        Change: ₱${order.change || 0}<br>
         <small>${new Date(order.date).toLocaleString()}</small>
       </li>
     `;
   });
 }
 
-// ---------- PAYMENT ----------
+// ---------- PAYMENT TOGGLE ----------
 function togglePaymentFields() {
   const method = document.getElementById("paymentMethod").value;
 
@@ -316,4 +308,55 @@ function logout() {
   if (confirm("Are you sure you want to log out?")) {
     window.location.href = "index.html";
   }
+  // ---------- RECEIPT ----------
+function showReceipt(user, products, total, payment, cash, change, gcash) {
+  const receiptHTML = `
+    <div id="receiptModal" style="
+      position:fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background:rgba(0,0,0,0.6);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+    ">
+      <div style="
+        background:#fff;
+        padding:20px;
+        border-radius:10px;
+        width:300px;
+        font-family:monospace;
+      ">
+        <h3 style="text-align:center;">🧾 RECEIPT</h3>
+
+        <p><strong>User:</strong> ${user}</p>
+        <p><strong>Items:</strong><br>${products}</p>
+        <p><strong>Total:</strong> ₱${total}</p>
+        <p><strong>Payment:</strong> ${payment}</p>
+
+        ${
+          payment === "cash"
+            ? `<p><strong>Cash:</strong> ₱${cash}<br><strong>Change:</strong> ₱${change}</p>`
+            : `<p><strong>GCash:</strong> ${gcash}</p>`
+        }
+
+        <p style="font-size:12px;">${new Date().toLocaleString()}</p>
+
+        <button onclick="printReceipt()" style="width:100%;margin-top:10px;">Print</button>
+        <button onclick="closeReceipt()" style="width:100%;margin-top:5px;">Close</button>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", receiptHTML);
+}
+
+function closeReceipt() {
+  document.getElementById("receiptModal").remove();
+}
+
+function printReceipt() {
+  window.print();
+}
 }
