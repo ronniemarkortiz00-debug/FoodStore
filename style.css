@@ -373,4 +373,7 @@ button:hover {
   button {
     font-size: 16px;
   }
+  html, body {
+  overflow-x: hidden;
+}
 }
