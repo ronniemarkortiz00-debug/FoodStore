@@ -103,7 +103,16 @@
 <!-- ✅ BUY BUTTON MUST BE OUTSIDE -->
 <button onclick="buy()">Buy</button>
     </div>
- 
+ <div id="receipt" style="display:none; border:1px solid #000; padding:15px; margin-top:20px; background:#fff;">
+  <h3>🧾 Receipt</h3>
+  <p id="rUser"></p>
+  <p id="rItems"></p>
+  <p id="rTotal"></p>
+  <p id="rPayment"></p>
+  <p id="rDate"></p>
+
+  <button onclick="printReceipt()">Print</button>
+</div>
 <script src="script.js"></script>
 </body>
 </html>
