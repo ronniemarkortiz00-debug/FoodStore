@@ -4,27 +4,65 @@ let isLogin = true;
 let cart = [];
 let orderHistory = [];
 
-// LOGIN / REGISTER
+/* ---------------- LOGIN / REGISTER ---------------- */
 function submitForm() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
-  if (!username || !password) { showError("Fill all fields"); return; }
+
+  if (!username || !password) {
+    showError("Fill all fields");
+    return;
+  }
+
   const action = isLogin ? "login" : "register";
 
-  fetch(scriptURL, { method: "POST", body: JSON.stringify({ action, username, password }) })
+  fetch(scriptURL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ action, username, password })
+  })
     .then(res => res.json())
     .then(data => {
+
+      // LOGIN
       if (action === "login") {
-        if (data.status === "success") window.location.href = "store.html?user=" + encodeURIComponent(username);
-        else showError("Invalid login");
-      } else if (action === "register") {
-        if (data.status === "exists") showError("Username already exists");
-        else { alert("Account created! You can now login."); toggleForm(); }
+        if (data.status === "success") {
+          localStorage.setItem("user", username); // ✅ SAVE LOGIN
+          window.location.href = "store.html";
+        } else {
+          showError("Invalid login");
+        }
       }
+
+      // REGISTER
+      if (action === "register") {
+        if (data.status === "exists") {
+          showError("Username already exists");
+        } else {
+          alert("Account created! You can now login.");
+          toggleForm();
+        }
+      }
+
     })
     .catch(() => showError("Connection error"));
 }
-// USER
+
+/* ---------------- ERROR ---------------- */
+function showError(msg) {
+  let err = document.getElementById("error");
+  if (!err) {
+    err = document.createElement("div");
+    err.id = "error";
+    err.className = "error";
+    document.querySelector(".box").appendChild(err);
+  }
+  err.innerText = msg;
+}
+
+/* ---------------- USER ---------------- */
 function getUser() {
   return localStorage.getItem("user");
 }
@@ -40,7 +78,7 @@ function displayUser() {
   document.getElementById("user").innerText = "Hello, " + user;
 }
 
-// CART
+/* ---------------- CART ---------------- */
 function add(product, price) {
   cart.push({ product, price });
   displayCart();
@@ -70,7 +108,7 @@ function removeItem(index) {
   displayCart();
 }
 
-// BUY
+/* ---------------- BUY ---------------- */
 function buy() {
   const user = getUser();
 
@@ -89,6 +127,9 @@ function buy() {
 
   fetch(scriptURL, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify({
       action: "order",
       username: user,
@@ -101,10 +142,10 @@ function buy() {
       cart = [];
       displayCart();
     })
-    .catch(() => alert("Error"));
+    .catch(() => alert("Error saving order"));
 }
 
-// HISTORY
+/* ---------------- ORDER HISTORY ---------------- */
 function fetchOrderHistory() {
   const user = getUser();
 
@@ -122,7 +163,7 @@ function fetchOrderHistory() {
     });
 }
 
-// LOGOUT
+/* ---------------- LOGOUT ---------------- */
 function logout() {
   localStorage.removeItem("user");
   window.location.replace("index.html");
