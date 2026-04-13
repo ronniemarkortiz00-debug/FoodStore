@@ -70,20 +70,29 @@
     </div>
   </div>
 
-  <div class="cart">
-    <h3>Cart</h3>
-    <ul id="cartList"></ul>
-    <h4 id="total"></h4>
-    <button onclick="buy()">Buy</button>
-  </div>
-<<select id="paymentMethod">
-  <option value="cash">Cash</option>
-  <option value="gcash">GCash</option>
-</select>
+ <div class="cart">
+  <h3>Cart</h3>
 
-<input type="number" id="cashGiven" placeholder="Cash amount" />
+  <ul id="cartList"></ul>
+  <h4 id="total"></h4>
 
-<div id="changeDisplay"></div>
+  <!-- ✅ PAYMENT SYSTEM -->
+  <label>Payment Method:</label>
+  <select id="paymentMethod" onchange="togglePaymentFields()">
+    <option value="cash">Cash</option>
+    <option value="gcash">GCash</option>
+  </select>
+
+  <!-- CASH INPUT -->
+  <input type="number" id="cashGiven" placeholder="Cash amount" />
+
+  <!-- GCASH INPUT (hidden by default) -->
+  <input type="text" id="gcashNumber" placeholder="GCash Number / Account Number" style="display:none;" />
+
+  <div id="changeDisplay"></div>
+
+  <button onclick="buy()">Buy</button>
+</div>
  
 <script src="script.js"></script>
 </body>
