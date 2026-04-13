@@ -3,6 +3,7 @@ const scriptURL = "https://script.google.com/macros/s/AKfycbzwIEvwyD3d--RjTqsgP9
 let isLogin = true;
 let cart = [];
 let orderHistory = [];
+let gcashPaid = false; // ✅ NEW
 
 // ---------- LOGIN / REGISTER ----------
 function toggleForm() {
@@ -132,7 +133,23 @@ function displayCart() {
   }
 }
 
-// ---------- BUY (UPDATED PAYMENT SYSTEM) ----------
+// ---------- QR GENERATOR ----------
+function generateQR(total) {
+  const qrImage = document.getElementById("qrImage");
+
+  const data = `GCash Payment - ₱${total}`;
+  qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data)}`;
+
+  document.getElementById("gcashQR").style.display = "block";
+}
+
+// ---------- CONFIRM GCASH ----------
+function confirmGCash() {
+  gcashPaid = true;
+  alert("Payment confirmed! Click BUY again.");
+}
+
+// ---------- BUY ----------
 function buy() {
   const user = getUser();
 
@@ -187,6 +204,13 @@ function buy() {
       return;
     }
 
+    // ❗ FIRST CLICK → SHOW QR
+    if (!gcashPaid) {
+      generateQR(totalPrice);
+      alert("Scan QR and click DONE");
+      return;
+    }
+
     change = 0;
 
     document.getElementById("changeDisplay").innerText =
@@ -216,15 +240,19 @@ function buy() {
       alert("Order saved!");
 
       cart = [];
+      gcashPaid = false; // reset
+
       displayCart();
       fetchOrderHistory();
 
       document.getElementById("cashGiven").value = "";
       document.getElementById("gcashNumber").value = "";
       document.getElementById("changeDisplay").innerText = "";
+      document.getElementById("gcashQR").style.display = "none";
     })
     .catch(() => alert("Error sending order"));
 }
+
 // ---------- ORDER HISTORY ----------
 function fetchOrderHistory() {
   const user = getUser();
@@ -234,10 +262,6 @@ function fetchOrderHistory() {
     .then(data => {
       orderHistory = data.filter(o => o.username === user);
       displayHistory();
-    })
-    .catch(() => {
-      const list = document.getElementById("historyList");
-      if (list) list.innerHTML = "<li>Failed to load order history.</li>";
     });
 }
 
@@ -259,6 +283,8 @@ function displayHistory() {
     `;
   });
 }
+
+// ---------- PAYMENT TOGGLE ----------
 function togglePaymentFields() {
   const method = document.getElementById("paymentMethod").value;
 
@@ -267,7 +293,10 @@ function togglePaymentFields() {
 
   document.getElementById("gcashField").style.display =
     method === "gcash" ? "block" : "none";
+
+  document.getElementById("gcashQR").style.display = "none";
 }
+
 // ---------- LOGOUT ----------
 function logout() {
   if (confirm("Are you sure you want to log out?")) {
