@@ -91,7 +91,13 @@
 <div id="gcashField" style="display:none;">
   <input type="text" id="gcashNumber" placeholder="Enter GCash number">
 </div>
-
+<!-- GCASH QR -->
+<div id="gcashQR" style="display:none; text-align:center;">
+  <p>Scan to Pay via GCash</p>
+  <img id="qrImage" src="" alt="GCash QR" style="width:150px;">
+  <br><br>
+  <button onclick="confirmGCash()">Done</button>
+</div>
 <p id="changeDisplay"></p>
 
 <!-- ✅ BUY BUTTON MUST BE OUTSIDE -->
