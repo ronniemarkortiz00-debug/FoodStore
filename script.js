@@ -229,21 +229,18 @@ function buy() {
   if (!confirmOrder) return;
 
   fetch(scriptURL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      action: "order",
-      username: user,
-      products: productsString,
-      total: totalPrice,
-      paymentMethod: paymentMethod,
-      cashGiven: cashGiven,
-      change: change,
-      gcashNumber: gcashNumber
-    })
+  method: "POST",
+  body: JSON.stringify({
+    action: "order",
+    username: user,
+    products: productsString,
+    total: totalPrice,
+    paymentMethod: paymentMethod,
+    cashGiven: cashGiven,
+    change: change,
+    gcashNumber: gcashNumber
   })
+})
     .then(() => {
       alert("Order saved!");
 
